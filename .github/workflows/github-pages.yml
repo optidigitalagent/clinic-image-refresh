@@ -66,4 +66,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-# Trigger live deployment from main after PR-only validation.
+# Trigger live deployment after Pages activation for clinic-image-refresh.
