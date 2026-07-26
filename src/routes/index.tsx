@@ -1,24 +1,51 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
+import { Hero } from "@/components/site/Hero";
+import { Services } from "@/components/site/Services";
+import { AboutClinic } from "@/components/site/AboutClinic";
+import { Team } from "@/components/site/Team";
+import { Cases } from "@/components/site/Cases";
+import { Certificates } from "@/components/site/Certificates";
+import { Appointment } from "@/components/site/Appointment";
+import { Contacts } from "@/components/site/Contacts";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Ami Dental — стоматологія повного циклу в Києві" },
+      {
+        name: "description",
+        content:
+          "Ami Dental — сучасна стоматологія у Києві: терапія, ортодонтія, протезування, хірургія та імплантація. Досвідчена команда, індивідуальний план і турбота про пацієнта.",
+      },
+      { property: "og:title", content: "Ami Dental — стоматологія повного циклу в Києві" },
+      {
+        property: "og:description",
+        content: "Комплексна стоматологічна допомога від досвідченої команди Ami Dental. Запис онлайн.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Home() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <Hero />
+        <Services />
+        <AboutClinic />
+        <Team />
+        <Cases />
+        <Certificates />
+        <Appointment />
+        <Contacts />
+      </main>
+      <Footer />
     </div>
   );
 }
