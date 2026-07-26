@@ -4,7 +4,7 @@ import { withBasePath } from "@/lib/base-path";
 import { SectionHeading } from "./SectionLabel";
 
 const SLIDES = Array.from({ length: 18 }, (_, index) =>
-  withBasePath(`media/clinic/clinic-${String(index + 1).padStart(2, "0")}.png`),
+  withBasePath(`media/clinic/clinic-${String(index + 1).padStart(2, "0")}.jpg`),
 );
 
 const POINTS = [
