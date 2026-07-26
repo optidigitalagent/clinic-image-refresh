@@ -3,12 +3,9 @@ import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { withBasePath } from "@/lib/base-path";
 import { SectionHeading } from "./SectionLabel";
 
-const SLIDES = [
-  withBasePath("media/clinic/team-photo.jpg"),
-  ...Array.from({ length: 20 }, (_, index) =>
-    withBasePath(`media/clinic/clinic-${String(index + 1).padStart(2, "0")}.png`),
-  ),
-];
+const SLIDES = Array.from({ length: 18 }, (_, index) =>
+  withBasePath(`media/clinic/clinic-${String(index + 1).padStart(2, "0")}.png`),
+);
 
 const POINTS = [
   "Індивідуальний план лікування з прозорою вартістю",
