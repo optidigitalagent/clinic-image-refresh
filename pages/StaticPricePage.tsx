@@ -3,10 +3,11 @@ import { ArrowUp } from "lucide-react";
 import { Header } from "../src/components/site/Header";
 import { Footer } from "../src/components/site/Footer";
 import { SectionLabel } from "../src/components/site/SectionLabel";
-import { PRICE_CATEGORIES } from "../src/lib/price-data";
+import { usePriceCategories } from "../src/lib/live-content";
 import { StaticAppointment } from "./StaticAppointment";
 
 export function StaticPricePage() {
+  const PRICE_CATEGORIES = usePriceCategories();
   const [active, setActive] = useState<string>(PRICE_CATEGORIES[0].id);
   const [showTop, setShowTop] = useState(false);
   const sectionsRef = useRef<Record<string, HTMLElement | null>>({});
