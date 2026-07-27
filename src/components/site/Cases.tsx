@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { SectionHeading } from "./SectionLabel";
+import { withBasePath } from "@/lib/base-path";
 
 const CASES_BASE =
   "https://res.cloudinary.com/qofhq8xa/image/upload/f_auto,q_auto,c_limit,w_1600/cases";
@@ -9,6 +10,7 @@ type SplitCase = {
   id: number;
   before: string;
   after: string;
+  title?: string;
 };
 
 type CombinedCase = {
@@ -20,8 +22,17 @@ type CombinedCase = {
 type Case = SplitCase | CombinedCase;
 
 const CASES: Case[] = [
-  { id: 1, before: `${CASES_BASE}/case-01/before-01.png`, after: `${CASES_BASE}/case-01/after-01.png` },
-  { id: 2, before: `${CASES_BASE}/case-02/before-01.png`, after: `${CASES_BASE}/case-02/after-01.png` },
+  {
+    id: 1,
+    before: `${CASES_BASE}/case-01/before-01.png`,
+    after: `${CASES_BASE}/case-01/after-01.png`,
+    title: "Кісткова пластика при вираженому дефіциті кістки перед імплантацією",
+  },
+  {
+    id: 2,
+    before: `${CASES_BASE}/case-02/before-01.png`,
+    after: withBasePath("media/cases/case-02-after-01.jpg"),
+  },
   {
     id: 3,
     combined: `${CASES_BASE}/case-03/combined-before-stage-after.png`,
@@ -43,8 +54,8 @@ const CASES: Case[] = [
   { id: 9, before: `${CASES_BASE}/case-09/before-01.png`, after: `${CASES_BASE}/case-09/after-01.png` },
   { id: 10, before: `${CASES_BASE}/case-10/before-01.png`, after: `${CASES_BASE}/case-10/after-01.png` },
   { id: 11, before: `${CASES_BASE}/case-11/before-01.png`, after: `${CASES_BASE}/case-11/after-01.png` },
-  { id: 12, before: `${CASES_BASE}/case-12/before-01.png`, after: `${CASES_BASE}/case-12/after-01.png` },
-  { id: 13, before: `${CASES_BASE}/case-13/before-01.png`, after: `${CASES_BASE}/case-13/after-01.png` },
+  { id: 12, before: `${CASES_BASE}/case-13/after-01.png`, after: `${CASES_BASE}/case-12/before-01.png` },
+  { id: 13, before: `${CASES_BASE}/case-13/before-01.png`, after: `${CASES_BASE}/case-12/after-01.png` },
 ];
 
 const row1 = CASES.slice(0, 7);
@@ -88,6 +99,11 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (c: Case) => void }) {
           </figure>
         </div>
       )}
+      {"combined" in c ? null : c.title ? (
+        <div className="px-3 py-2 text-left text-[11px] leading-snug text-muted-foreground">
+          {c.title}
+        </div>
+      ) : null}
     </button>
   );
 }
@@ -160,6 +176,9 @@ export function Cases() {
                 </figure>
               ) : (
                 <>
+                  {open.title ? (
+                    <div className="text-sm font-medium leading-snug">{open.title}</div>
+                  ) : null}
                   <figure>
                     <div className="text-xs uppercase tracking-wider mb-2 text-muted-foreground">До</div>
                     <img
