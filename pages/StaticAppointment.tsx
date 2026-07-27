@@ -4,9 +4,12 @@ import { SectionHeading } from "../src/components/site/SectionLabel";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
-const appointmentsApiUrl = (import.meta.env.VITE_APPOINTMENTS_API_URL as string | undefined)
-  ?.trim()
-  .replace(/\/+$/, "");
+const DEFAULT_APPOINTMENTS_API_URL = "https://appointments-production-23ea.up.railway.app";
+
+const appointmentsApiUrl = (
+  (import.meta.env.VITE_APPOINTMENTS_API_URL as string | undefined)?.trim() ||
+  DEFAULT_APPOINTMENTS_API_URL
+).replace(/\/+$/, "");
 
 export function StaticAppointment() {
   const [name, setName] = useState("");
