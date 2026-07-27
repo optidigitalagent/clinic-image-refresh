@@ -11,7 +11,7 @@ import { DOCTORS, type Doctor } from "@/lib/doctors-data";
 import { PRICE_CATEGORIES, type PriceCategory } from "@/lib/price-data";
 
 /** ID Google Таблиці (частина посилання між /d/ і /edit). Порожньо = дані з коду. */
-export const CONTENT_SHEET_ID = "";
+export const CONTENT_SHEET_ID = "1CBzCEbNNPSj_6AxlCMevJ6d-m8MDDCA89OV7yHz_aOY";
 
 /** Назви вкладок у таблиці */
 const DOCTORS_TAB = "Лікарі";
