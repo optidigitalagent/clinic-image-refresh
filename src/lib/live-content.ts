@@ -113,8 +113,9 @@ export function useDoctors(): Doctor[] {
     fetchTab(DOCTORS_TAB).then((rows) => {
       if (cancelled || !rows) return;
       const parsed = rowsWithoutHeader(rows)
-        .map((r) => ({
-          photo: normalizePhotoUrl(r[0] ?? ""),
+        .map((r, i) => ({
+          // якщо комірку з фото лишили порожньою — беремо фото з коду (за порядком)
+          photo: normalizePhotoUrl(r[0] ?? "") || DOCTORS[i]?.photo || "",
           role: (r[1] ?? "").trim(),
           name: (r[2] ?? "").trim(),
           intro: (r[3] ?? "").trim(),
