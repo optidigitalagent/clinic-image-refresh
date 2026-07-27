@@ -1,50 +1,10 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { withBasePath } from "@/lib/base-path";
 import { SectionHeading } from "./SectionLabel";
+import { type Doctor } from "@/lib/doctors-data";
+import { useDoctors } from "@/lib/live-content";
 
-const DOCTORS = [
-  {
-    photo: withBasePath("media/doctors/doctor-nataliia-lytovchenko.webp"),
-    role: "Щелепно-лицевий хірург вищої категорії",
-    name: "Литовченко Наталія Михайлівна",
-    intro:
-      "Кандидат медичних наук, доцент кафедри хірургічної стоматології та щелепно-лицьової хірургії НМУ імені О.О. Богомольця.",
-    bullets: [
-      "Член EACMFS, Української асоціації черепно-щелепно-лицьових хірургів та Асоціації стоматологів України.",
-      "Реконструктивно-відновні операції при дефектах і деформаціях щелеп та м'яких тканин обличчя.",
-      "Кістково-пластичні операції кісток лицьового черепа, лікування захворювань слинних залоз і СНЩС.",
-      "Дентальна імплантація, синус-ліфтинг, кісткова пластика та лікування утрудненого прорізування зубів мудрості.",
-    ],
-  },
-  {
-    photo: withBasePath("media/doctors/doctor-olha-hushcha.webp"),
-    role: "Лікар-стоматолог широкого профілю",
-    name: "Гуща Ольга Анатоліївна",
-    intro:
-      "Спеціалізація — терапія, ортопедія та ортодонтія. Працює з 2003 року й має великий практичний досвід.",
-    bullets: [
-      "Всі види лікування зубів: карієс, кореневі канали та некаріозні ураження.",
-      "Протезування: керамічні коронки, вкладки, накладки, вініри та коронки на імплантах.",
-      "Ортодонтія: виправлення прикусу у дорослих і підлітків сучасними методиками.",
-      "Лікування тканин пародонту та комплексна реабілітація зубних рядів і зубощелепних деформацій.",
-    ],
-  },
-  {
-    photo: withBasePath("media/doctors/doctor-dmytro-hushcha.webp"),
-    role: "Лікар-стоматолог-ортопед вищої категорії",
-    name: "Гуща Дмитро Костянтинович",
-    intro:
-      "Кандидат медичних наук, доцент кафедри НМУ імені О.О. Богомольця. Досвід клінічної практики — 25 років.",
-    bullets: [
-      "Спеціалізація — ортопедична стоматологія та гнатологія.",
-      "Функціональна діагностика, планування комплексного ортопедичного лікування та відновлення прикусу.",
-      "Протезування зубів і реабілітація з урахуванням роботи скронево-нижньощелепного суглоба.",
-    ],
-  },
-];
-
-function DoctorCard({ d }: { d: (typeof DOCTORS)[number] }) {
+function DoctorCard({ d }: { d: Doctor }) {
   const [open, setOpen] = useState(false);
   return (
     <article className="rounded-3xl border border-border/70 bg-card overflow-hidden flex flex-col">
@@ -87,6 +47,7 @@ function DoctorCard({ d }: { d: (typeof DOCTORS)[number] }) {
 }
 
 export function Team() {
+  const doctors = useDoctors();
   return (
     <section id="team" className="py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -97,7 +58,7 @@ export function Team() {
         />
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start">
-          {DOCTORS.map((d) => (
+          {doctors.map((d) => (
             <DoctorCard key={d.name} d={d} />
           ))}
         </div>
