@@ -5,7 +5,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Appointment } from "@/components/site/Appointment";
 import { SectionLabel } from "@/components/site/SectionLabel";
-import { PRICE_CATEGORIES } from "@/lib/price-data";
+import { usePriceCategories } from "@/lib/live-content";
 
 export const Route = createFileRoute("/price")({
   head: () => ({
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/price")({
 });
 
 function PricePage() {
+  const PRICE_CATEGORIES = usePriceCategories();
   const [active, setActive] = useState<string>(PRICE_CATEGORIES[0].id);
   const [showTop, setShowTop] = useState(false);
   const sectionsRef = useRef<Record<string, HTMLElement | null>>({});
