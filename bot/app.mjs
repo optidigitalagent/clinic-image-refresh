@@ -3,8 +3,14 @@ const MAX_BODY_BYTES = 16 * 1024;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 
-export function createApp({ env = process.env, fetchImpl = fetch, now = Date.now } = {}) {
+export function createApp({
+  env = process.env,
+  fetchImpl = fetch,
+  now = Date.now,
+  logger = console,
+} = {}) {
   const rateLimiter = createRateLimiter({ now });
+  const telegramChatIds = parseTelegramChatIds(env.TELEGRAM_CHAT_IDS, env.TELEGRAM_CHAT_ID);
 
   return async function handleRequest(request) {
     const url = new URL(request.url);
@@ -12,7 +18,7 @@ export function createApp({ env = process.env, fetchImpl = fetch, now = Date.now
     if (url.pathname === "/health" && request.method === "GET") {
       return jsonResponse({
         ok: true,
-        telegramConfigured: Boolean(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID),
+        telegramConfigured: Boolean(env.TELEGRAM_BOT_TOKEN && telegramChatIds.length),
       });
     }
 
@@ -46,7 +52,7 @@ export function createApp({ env = process.env, fetchImpl = fetch, now = Date.now
       return jsonResponse({ ok: false, error: "Origin not allowed" }, { status: 403 });
     }
 
-    if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+    if (!env.TELEGRAM_BOT_TOKEN || !telegramChatIds.length) {
       return jsonResponse(
         { ok: false, error: "Сервіс заявок тимчасово недоступний" },
         { status: 503, headers: corsHeaders },
@@ -78,13 +84,33 @@ export function createApp({ env = process.env, fetchImpl = fetch, now = Date.now
     }
 
     try {
-      await sendTelegramAppointment(data, {
+      const delivery = await sendTelegramAppointment(data, {
         botToken: env.TELEGRAM_BOT_TOKEN,
-        chatId: env.TELEGRAM_CHAT_ID,
+        chatIds: telegramChatIds,
         fetchImpl,
       });
-    } catch (error) {
-      console.error("Telegram delivery failed", error instanceof Error ? error.message : error);
+
+      const logData = {
+        recipientsConfigured: telegramChatIds.length,
+        delivered: delivery.delivered,
+        failed: delivery.failed,
+      };
+
+      if (!delivery.delivered) {
+        logger.error("Telegram delivery summary", logData);
+        return jsonResponse(
+          { ok: false, error: "Не вдалося надіслати заявку. Спробуйте ще раз" },
+          { status: 502, headers: corsHeaders },
+        );
+      }
+
+      logger.info("Telegram delivery summary", logData);
+    } catch {
+      logger.error("Telegram delivery summary", {
+        recipientsConfigured: telegramChatIds.length,
+        delivered: 0,
+        failed: telegramChatIds.length,
+      });
       return jsonResponse(
         { ok: false, error: "Не вдалося надіслати заявку. Спробуйте ще раз" },
         { status: 502, headers: corsHeaders },
@@ -93,6 +119,14 @@ export function createApp({ env = process.env, fetchImpl = fetch, now = Date.now
 
     return jsonResponse({ ok: true }, { status: 201, headers: corsHeaders });
   };
+}
+
+export function parseTelegramChatIds(chatIds, legacyChatId) {
+  return [chatIds, legacyChatId]
+    .filter((value) => typeof value === "string")
+    .flatMap((value) => value.split(/[\s,]+/))
+    .map((chatId) => chatId.trim())
+    .filter((chatId, index, values) => chatId && values.indexOf(chatId) === index);
 }
 
 export function validateAppointment(input) {
@@ -138,25 +172,32 @@ export function formatTelegramMessage(data, date = new Date()) {
     .join("\n");
 }
 
-async function sendTelegramAppointment(data, { botToken, chatId, fetchImpl }) {
+async function sendTelegramAppointment(data, { botToken, chatIds, fetchImpl }) {
+  const text = formatTelegramMessage(data);
+  const deliveries = await Promise.allSettled(
+    chatIds.map((chatId) => sendTelegramMessage({ botToken, chatId, text, fetchImpl })),
+  );
+
+  const delivered = deliveries.filter((delivery) => delivery.status === "fulfilled").length;
+  return { delivered, failed: deliveries.length - delivered };
+}
+
+async function sendTelegramMessage({ botToken, chatId, text, fetchImpl }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
 
   try {
-    const response = await fetchImpl(
-      `https://api.telegram.org/bot${botToken}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: formatTelegramMessage(data),
-          parse_mode: "HTML",
-          disable_web_page_preview: true,
-        }),
-        signal: controller.signal,
-      },
-    );
+    const response = await fetchImpl(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      }),
+      signal: controller.signal,
+    });
 
     const result = await response.json().catch(() => null);
     if (!response.ok || !result?.ok) {

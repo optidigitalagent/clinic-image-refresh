@@ -4,7 +4,7 @@ import { SectionHeading } from "../src/components/site/SectionLabel";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
-const DEFAULT_APPOINTMENTS_API_URL = "https://appointments-production-23ea.up.railway.app";
+const DEFAULT_APPOINTMENTS_API_URL = "https://appointments-production-5cd2.up.railway.app";
 
 const appointmentsApiUrl = (
   (import.meta.env.VITE_APPOINTMENTS_API_URL as string | undefined)?.trim() ||
