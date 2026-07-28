@@ -5,7 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   root: "pages",
-  base: "/clinic-image-refresh/",
+  base: "/",
   publicDir: "../public",
   plugins: [tsconfigPaths(), tailwindcss(), react()],
   build: {
